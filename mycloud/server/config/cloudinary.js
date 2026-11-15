@@ -4,9 +4,9 @@ dotenv.config();
 
 const cleanVal = (val) => (val ? val.replace(/[<>]/g, '').trim() : '');
 
-const cloudName = cleanVal(process.env.CLOUDINARY_CLOUD_NAME);
-const apiKey = cleanVal(process.env.CLOUDINARY_API_KEY);
-const apiSecret = cleanVal(process.env.CLOUDINARY_API_SECRET);
+let cloudName = cleanVal(process.env.CLOUDINARY_CLOUD_NAME);
+let apiKey = cleanVal(process.env.CLOUDINARY_API_KEY);
+let apiSecret = cleanVal(process.env.CLOUDINARY_API_SECRET);
 let cloudinaryUrl = process.env.CLOUDINARY_URL ? process.env.CLOUDINARY_URL.replace(/[<>]/g, '').trim() : '';
 
 // Auto-derive if URL is provided

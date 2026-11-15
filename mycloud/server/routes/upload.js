@@ -369,10 +369,10 @@ router.post('/abort', requireAuth, async (req, res) => {
 });
 
 // Mock upload handler for development testing when R2 credentials aren't active yet
-router.put('/mock-upload/:key', (req, res) => {
+router.put('/mock-upload/*', (req, res) => {
   res.status(200).send();
 });
-router.put('/mock-part/:key/:part', (req, res) => {
+router.put('/mock-part/*', (req, res) => {
   res.setHeader('ETag', `"${uuidv4()}"`);
   res.status(200).send();
 });

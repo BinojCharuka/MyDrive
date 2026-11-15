@@ -56,7 +56,7 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     try {
       // Pre-check provider limits: Cloudinary (25 GB) vs R2 (10 GB)
-      const isMedia = item.mimeType.startsWith('image/') || item.mimeType.startsWith('video/');
+      const isMedia = (Boolean(item.mimeType) && (item.mimeType.startsWith('image/') || item.mimeType.startsWith('video/'))) || /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico|heic|avif|mp4|mov|avi|mkv|webm)$/i.test(item.name);
       const limit = isMedia ? 26843545600 : 10737418240;
       const currentProviderUsed = isMedia
         ? (storageUsage.cloudinary?.usedBytes ?? 0)
