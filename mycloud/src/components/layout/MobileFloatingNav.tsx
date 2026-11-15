@@ -103,7 +103,7 @@ export const MobileFloatingNav: React.FC<MobileFloatingNavProps> = ({ onOpenCrea
 
       {/* Liquid Quick-Action Sheet Drawer */}
       <div
-        className={`fixed left-4 right-4 bottom-24 max-w-md mx-auto z-50 lg:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`fixed left-4 right-4 bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] max-w-md mx-auto z-50 lg:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           sheetOpen
             ? 'opacity-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 translate-y-6 pointer-events-none'
@@ -187,7 +187,7 @@ export const MobileFloatingNav: React.FC<MobileFloatingNavProps> = ({ onOpenCrea
       {/* Floating Liquid Navigation Bar */}
       <nav
         aria-label="Mobile Navigation"
-        className="fixed bottom-4 inset-x-3 sm:inset-x-6 max-w-md mx-auto z-40 lg:hidden"
+        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] inset-x-3 sm:inset-x-6 max-w-md mx-auto z-40 lg:hidden"
       >
         <div className="bg-[#101210]/90 backdrop-blur-2xl border border-[#1c2820] shadow-[0_16px_40px_rgba(0,0,0,0.8)] rounded-full p-1.5 flex items-center justify-between relative ring-1 ring-white/5">
           {/* 1. Home */}

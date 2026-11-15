@@ -11,6 +11,8 @@ import MoveModal from '../files/MoveModal';
 import ShareModal from '../files/ShareModal';
 import DeleteConfirmModal from '../files/DeleteConfirmModal';
 import FilePreviewModal from '../files/FilePreviewModal';
+import PwaInstallModal from '../pwa/PwaInstallModal';
+import PwaInstallBanner from '../pwa/PwaInstallBanner';
 import { Folder, FileItem } from '../../types';
 import { useStorage } from '../../context/StorageContext';
 
@@ -141,6 +143,10 @@ export const AppLayout: React.FC = () => {
           onRename={(f) => setRenameTarget({ id: f.id, name: f.name, type: 'file' })}
           onDelete={(f) => setDeleteTarget({ id: f.id, name: f.name, type: 'file' })}
         />
+
+        {/* Progressive Web App Install Support */}
+        <PwaInstallBanner />
+        <PwaInstallModal />
       </div>
     </DropZone>
   );

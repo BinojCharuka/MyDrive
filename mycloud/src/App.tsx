@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { StorageProvider } from './context/StorageContext';
 import { UploadProvider } from './context/UploadContext';
+import { PwaProvider } from './context/PwaContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AppLayout from './components/layout/AppLayout';
 
@@ -23,34 +24,36 @@ export const App: React.FC = () => {
     <AuthProvider>
       <StorageProvider>
         <UploadProvider>
-          <Routes>
-            {/* Public Auth Routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <PwaProvider>
+            <Routes>
+              {/* Public Auth Routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-            {/* Protected App Routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<DashboardPage />} />
-              <Route path="files" element={<MyFilesPage />} />
-              <Route path="recent" element={<RecentPage />} />
-              <Route path="starred" element={<StarredPage />} />
-              <Route path="shared-with-me" element={<SharedPage initialTab="with-me" />} />
-              <Route path="shared-by-me" element={<SharedPage initialTab="by-me" />} />
-              <Route path="trash" element={<TrashPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
+              {/* Protected App Routes */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<DashboardPage />} />
+                <Route path="files" element={<MyFilesPage />} />
+                <Route path="recent" element={<RecentPage />} />
+                <Route path="starred" element={<StarredPage />} />
+                <Route path="shared-with-me" element={<SharedPage initialTab="with-me" />} />
+                <Route path="shared-by-me" element={<SharedPage initialTab="by-me" />} />
+                <Route path="trash" element={<TrashPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
 
-            {/* Catch-all redirect */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+              {/* Catch-all redirect */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </PwaProvider>
         </UploadProvider>
       </StorageProvider>
     </AuthProvider>

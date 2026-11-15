@@ -62,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   );
 
   return (
-    <header className="h-16 bg-[#0a0d0b]/90 backdrop-blur-xl border-b border-[#1c2820] px-3.5 sm:px-6 flex items-center justify-between sticky top-0 z-20 transition-all w-full max-w-full text-[#f5f5f5]">
+    <header className="pt-[env(safe-area-inset-top,0px)] bg-[#0a0d0b]/90 backdrop-blur-xl border-b border-[#1c2820] px-3.5 sm:px-6 flex items-center justify-between sticky top-0 z-20 transition-all w-full max-w-full text-[#f5f5f5] min-h-[4rem]">
       {/* Hidden file input for quick upload button */}
       <input
         type="file"

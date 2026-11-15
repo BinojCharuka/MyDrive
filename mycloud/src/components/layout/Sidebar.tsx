@@ -17,9 +17,11 @@ import {
   HardDrive,
   ChevronRight,
   Lock,
+  Smartphone,
 } from 'lucide-react';
 import { useStorage } from '../../context/StorageContext';
 import { useUpload } from '../../context/UploadContext';
+import { usePwa } from '../../context/PwaContext';
 import { formatBytes } from '../../utils/format';
 
 interface SidebarProps {
@@ -35,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { storageUsage } = useStorage();
   const { uploadFiles, uploadFolderStructure } = useUpload();
+  const { promptInstall, isStandalone } = usePwa();
   const [newMenuOpen, setNewMenuOpen] = useState(false);
   const newMenuRef = useRef<HTMLDivElement>(null);
 
@@ -225,6 +228,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </NavLink>
             );
           })}
+
+          {/* Install App Action */}
+          {!isStandalone && (
+            <button
+              onClick={() => {
+                onClose?.();
+                promptInstall();
+              }}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold text-[#2fd697] bg-[#13261e]/70 hover:bg-[#13261e] border border-[#1b563f]/60 transition-all duration-200 active:scale-[0.98] mt-2 text-left"
+            >
+              <Smartphone className="w-4 h-4 text-[#2fd697] shrink-0" />
+              <span>Install Web App</span>
+            </button>
+          )}
         </nav>
 
         {/* Bottom Storage Meter: Cloudflare R2 (10 GB) & Cloudinary Media (25 GB) */}

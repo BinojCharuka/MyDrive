@@ -9,9 +9,13 @@ import {
   AlertCircle,
   RefreshCw,
   Save,
+  Smartphone,
+  Download,
+  Apple,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useStorage } from '../context/StorageContext';
+import { usePwa } from '../context/PwaContext';
 import { formatBytes } from '../utils/format';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
@@ -19,6 +23,7 @@ import toast from 'react-hot-toast';
 export const SettingsPage: React.FC = () => {
   const { user, profile, updateProfile } = useAuth();
   const { storageUsage } = useStorage();
+  const { promptInstall, isStandalone, isIOS, isAndroid } = usePwa();
 
   const [fullName, setFullName] = useState(profile?.full_name || '');
   const [savingProfile, setSavingProfile] = useState(false);
@@ -350,6 +355,71 @@ export const SettingsPage: React.FC = () => {
                 <AlertCircle className="w-3.5 h-3.5" />
               )}
               <span className="capitalize">{healthStatus?.integrations?.cloudinary || 'Connected'}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Progressive Web App (PWA) Mobile & Desktop Installation */}
+      <div className="bg-[#101210] border border-[#1c2820] rounded-3xl p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-4 mb-4 pb-4 border-b border-[#1c2820]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#13261e] border border-[#1b563f] flex items-center justify-center text-[#2fd697] shadow-sm">
+              <Smartphone className="w-5 h-5 stroke-[2.2]" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-[#f5f5f5] flex items-center gap-2">
+                <span>App Installation (PWA)</span>
+                {isStandalone && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#13261e] text-[#2fd697] border border-[#1b563f] font-mono">
+                    Installed
+                  </span>
+                )}
+              </h3>
+              <p className="text-xs text-[#a0a6a3]">
+                Install MyCloud on iOS, Android, macOS, or Windows for a standalone app experience
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={promptInstall}
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold bg-gradient-to-r from-[#2fd697] to-[#1eb57c] hover:from-[#28c287] hover:to-[#188f63] text-[#050806] rounded-xl shadow-md shadow-[#2fd697]/20 transition-all active:scale-95"
+          >
+            <Download className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>{isStandalone ? 'View App Details' : 'Install App'}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div className="p-3.5 rounded-2xl bg-[#050806] border border-[#1c2820] flex items-center justify-between">
+            <div>
+              <p className="text-[#a0a6a3] text-[11px]">Installation Status</p>
+              <p className="text-sm font-semibold text-[#f5f5f5]">
+                {isStandalone ? 'Standalone App Mode' : 'Running in Web Browser'}
+              </p>
+            </div>
+            <span
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 ${
+                isStandalone
+                  ? 'bg-[#13261e] text-[#2fd697] border border-[#1b563f]'
+                  : 'bg-[#1c2820] text-[#a0a6a3]'
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{isStandalone ? 'Installed' : 'Web Version'}</span>
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#050806] border border-[#1c2820] flex items-center justify-between">
+            <div>
+              <p className="text-[#a0a6a3] text-[11px]">Device Platform</p>
+              <p className="text-sm font-semibold text-[#f5f5f5]">
+                {isIOS ? 'Apple iOS (Safari A2HS)' : isAndroid ? 'Android OS (Chromium PWA)' : 'Desktop / Laptop Browser'}
+              </p>
+            </div>
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#13261e] text-[#2fd697] border border-[#1b563f] font-mono">
+              Ready
             </span>
           </div>
         </div>
