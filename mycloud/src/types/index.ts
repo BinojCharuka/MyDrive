@@ -48,6 +48,8 @@ export interface FileItem {
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
+  thumbnail_url?: string;
+  preview_url?: string;
   // Shared metadata when fetched in shared context
   shared_permission?: 'viewer' | 'editor';
   shared_by_user?: Profile;

@@ -19,8 +19,33 @@ import {
 import { Folder as FolderType, FileItem } from '../../types';
 import { useStorage } from '../../context/StorageContext';
 import { formatBytes, formatDate, getFileTypeCategory } from '../../utils/format';
+import { useFileThumbnail } from '../../utils/thumbnail';
 import api from '../../lib/api';
 import toast from 'react-hot-toast';
+
+const FileRowThumbnail: React.FC<{ file: FileItem; defaultIcon: React.ReactNode }> = ({ file, defaultIcon }) => {
+  const { thumbnailUrl, setError } = useFileThumbnail(file);
+
+  if (thumbnailUrl) {
+    return (
+      <div className="w-8 h-8 rounded-lg overflow-hidden border border-[#1b563f] shrink-0 bg-[#070a08]">
+        <img
+          src={thumbnailUrl}
+          alt={file.name}
+          loading="lazy"
+          onError={() => setError(true)}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-8 h-8 rounded-lg bg-[#13261e] border border-[#1b563f] flex items-center justify-center shrink-0 text-[#2fd697]">
+      {defaultIcon}
+    </div>
+  );
+};
 
 interface FileListProps {
   folders: FolderType[];
@@ -210,9 +235,7 @@ export const FileList: React.FC<FileListProps> = ({
               </td>
               <td className="py-2.5 px-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#13261e] border border-[#1b563f] flex items-center justify-center shrink-0 text-[#2fd697]">
-                    {getFileIcon(file.mime_type, file.name)}
-                  </div>
+                  <FileRowThumbnail file={file} defaultIcon={getFileIcon(file.mime_type, file.name)} />
                   <span className="font-medium text-[#f5f5f5] truncate" title={file.name}>
                     {file.name}
                   </span>

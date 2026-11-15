@@ -16,10 +16,12 @@ import {
   Trash2,
   Eye,
   Edit3,
+  Play,
 } from 'lucide-react';
 import { FileItem } from '../../types';
 import { useStorage } from '../../context/StorageContext';
 import { formatBytes, formatDate, formatRelativeTime, getFileTypeCategory } from '../../utils/format';
+import { useFileThumbnail } from '../../utils/thumbnail';
 import api from '../../lib/api';
 import toast from 'react-hot-toast';
 
@@ -41,6 +43,7 @@ export const FileCard: React.FC<FileCardProps> = ({
   onDelete,
 }) => {
   const { toggleStarFile } = useStorage();
+  const { thumbnailUrl, isVideo, setError } = useFileThumbnail(file);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -119,9 +122,14 @@ export const FileCard: React.FC<FileCardProps> = ({
         menuOpen ? 'z-50 shadow-2xl ring-1 ring-[#2fd697]/30' : 'z-10 hover:z-20'
       }`}
     >
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="w-9 h-9 rounded-xl bg-[#13261e] border border-[#1b563f] flex items-center justify-center text-[#2fd697] shrink-0">
-          {getCategoryIcon()}
+      <div className="flex items-start justify-between gap-2 mb-2.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-[#13261e] border border-[#1b563f] flex items-center justify-center text-[#2fd697] shrink-0">
+            {getCategoryIcon()}
+          </div>
+          <span className="text-[10px] font-mono uppercase text-[#8a948e] bg-[#141815] px-1.5 py-0.5 rounded border border-[#202722] truncate max-w-[65px]">
+            {file.name.split('.').pop() || 'file'}
+          </span>
         </div>
 
         <div className="flex items-center gap-0.5">
@@ -239,7 +247,37 @@ export const FileCard: React.FC<FileCardProps> = ({
         </div>
       </div>
 
-      <div className="min-w-0">
+      {/* Thumbnail Preview Area */}
+      {thumbnailUrl ? (
+        <div className="relative w-full h-28 sm:h-32 mb-3 rounded-xl overflow-hidden bg-[#070a08] border border-[#1c2820] group-hover:border-[#2fd697]/40 transition-colors flex items-center justify-center">
+          <img
+            src={thumbnailUrl}
+            alt={file.name}
+            loading="lazy"
+            onError={() => setError(true)}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {isVideo && (
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-xs">
+                <Play className="w-4 h-4 fill-white translate-x-0.5" />
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="w-full h-20 sm:h-24 mb-3 rounded-xl bg-[#0a0d0b] border border-[#1c2820]/70 flex flex-col items-center justify-center gap-1.5 group-hover:border-[#2fd697]/30 transition-colors">
+          <div className="text-[#2fd697]/70 group-hover:text-[#2fd697] transition-colors">
+            {getCategoryIcon()}
+          </div>
+          <span className="text-[10px] text-[#8a948e] font-mono tracking-wide uppercase">
+            .{file.name.split('.').pop() || 'file'}
+          </span>
+        </div>
+      )}
+
+      {/* File Details */}
+      <div className="min-w-0 mt-auto">
         <div className="flex items-center gap-1.5 mb-1 min-w-0">
           <h4 className="text-sm font-semibold text-[#f5f5f5] truncate flex-1 min-w-0" title={file.name}>
             {file.name}
