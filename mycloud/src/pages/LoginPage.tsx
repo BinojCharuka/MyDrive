@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Cloud, Lock, Mail, Eye, EyeOff, ArrowRight, ShieldCheck, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
+import { Cloud, Lock, Mail, Eye, EyeOff, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
@@ -13,7 +13,7 @@ export const LoginPage: React.FC = () => {
   const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
   const [resending, setResending] = useState(false);
 
-  const { signIn, isDemoMode } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,17 +57,6 @@ export const LoginPage: React.FC = () => {
       toast.error(err.message || 'Failed to resend confirmation email');
     } finally {
       setResending(false);
-    }
-  };
-
-  const handleDemoLogin = async () => {
-    setLoading(true);
-    try {
-      await signIn('demo@mycloud.io', 'DemoPassword123!');
-      toast.success('Logged in with Demo Account!');
-      navigate('/');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -171,19 +160,6 @@ export const LoginPage: React.FC = () => {
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
-
-          {/* Quick Demo Login Helper */}
-          <div className="mt-6 pt-6 border-t border-[#1c2820]">
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[#13261e] hover:bg-[#1b563f] border border-[#1b563f] text-[#2fd697] font-semibold text-xs rounded-xl transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#2fd697]" />
-              <span>Instant Test Access (Demo Account)</span>
-            </button>
-          </div>
         </div>
 
         {/* Footer Link */}
