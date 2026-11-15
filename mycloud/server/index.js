@@ -47,7 +47,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/api', apiLimiter);
 
 // Health check & status endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'ok',
     service: 'MyCloud Backend API',
@@ -66,6 +66,11 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/quota', quotaRoutes);
 
+// Support direct routes when Vercel serverless functions strip the /api prefix
+app.use('/upload', uploadRoutes);
+app.use('/files', fileRoutes);
+app.use('/quota', quotaRoutes);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint Not Found', path: req.originalUrl });
@@ -80,14 +85,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`===============================================`);
-  console.log(`🚀 MyCloud Backend Server running on port ${PORT}`);
-  console.log(`📦 Cloudflare R2: ${isR2Configured ? 'ACTIVE (Documents & Files)' : 'DEVELOPMENT / MOCK MODE'}`);
-  console.log(`☁️ Cloudinary:    ${isCloudinaryConfigured ? 'ACTIVE (Photos, Images & Videos)' : 'PENDING CONFIGURATION (Using R2 fallback)'}`);
-  console.log(`⚡ Supabase DB:   ${isSupabaseConfigured ? 'ACTIVE' : 'DEVELOPMENT / MOCK MODE'}`);
-  console.log(`===============================================`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`===============================================`);
+    console.log(`🚀 MyCloud Backend Server running on port ${PORT}`);
+    console.log(`📦 Cloudflare R2: ${isR2Configured ? 'ACTIVE (Documents & Files)' : 'DEVELOPMENT / MOCK MODE'}`);
+    console.log(`☁️ Cloudinary:    ${isCloudinaryConfigured ? 'ACTIVE (Photos, Images & Videos)' : 'PENDING CONFIGURATION (Using R2 fallback)'}`);
+    console.log(`⚡ Supabase DB:   ${isSupabaseConfigured ? 'ACTIVE' : 'DEVELOPMENT / MOCK MODE'}`);
+    console.log(`===============================================`);
+  });
+}
 
 export default app;
 

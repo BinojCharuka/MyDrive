@@ -1,4 +1,11 @@
 {
+  "name": "mydrive",
+  "private": true,
+  "scripts": {
+    "build": "cd mycloud && npm install && npm run build",
+    "dev": "cd mycloud && npm run dev",
+    "start": "cd mycloud && npm run server"
+  },
   "dependencies": {
     "unslopovich": "^1.0.0"
   }
