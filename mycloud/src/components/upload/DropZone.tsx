@@ -13,9 +13,20 @@ export const DropZone: React.FC<{ children: React.ReactNode }> = ({ children }) 
   };
 
   useEffect(() => {
+    const isExternalFileDrag = (e: DragEvent): boolean => {
+      if ((window as any).__mycloud_internal_drag) return false;
+      if (!e.dataTransfer) return false;
+      const types = Array.from(e.dataTransfer.types || []);
+      if (types.includes('application/x-mycloud-item') || types.includes('application/json')) {
+        return false;
+      }
+      return types.includes('Files');
+    };
+
     const handleDragEnter = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
+      if (!isExternalFileDrag(e)) return;
       dragCounterRef.current++;
       if (e.dataTransfer?.items && e.dataTransfer.items.length > 0) {
         setIsDragOver(true);
@@ -25,6 +36,7 @@ export const DropZone: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const handleDragLeave = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
+      if (!isExternalFileDrag(e)) return;
       dragCounterRef.current--;
       if (dragCounterRef.current <= 0) {
         dragCounterRef.current = 0;
@@ -33,11 +45,13 @@ export const DropZone: React.FC<{ children: React.ReactNode }> = ({ children }) 
     };
 
     const handleDragOver = (e: DragEvent) => {
+      if (!isExternalFileDrag(e)) return;
       e.preventDefault();
       e.stopPropagation();
     };
 
     const handleDrop = async (e: DragEvent) => {
+      if (!isExternalFileDrag(e)) return;
       e.preventDefault();
       e.stopPropagation();
       dragCounterRef.current = 0;
@@ -111,10 +125,17 @@ export const DropZone: React.FC<{ children: React.ReactNode }> = ({ children }) 
       }
     };
 
+    const handleGlobalDragEnd = () => {
+      (window as any).__mycloud_internal_drag = false;
+      dragCounterRef.current = 0;
+      setIsDragOver(false);
+    };
+
     window.addEventListener('dragenter', handleDragEnter);
     window.addEventListener('dragleave', handleDragLeave);
     window.addEventListener('dragover', handleDragOver);
     window.addEventListener('drop', handleDrop);
+    window.addEventListener('dragend', handleGlobalDragEnd);
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
@@ -122,6 +143,7 @@ export const DropZone: React.FC<{ children: React.ReactNode }> = ({ children }) 
       window.removeEventListener('dragleave', handleDragLeave);
       window.removeEventListener('dragover', handleDragOver);
       window.removeEventListener('drop', handleDrop);
+      window.removeEventListener('dragend', handleGlobalDragEnd);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [uploadFiles, uploadFolderStructure]);

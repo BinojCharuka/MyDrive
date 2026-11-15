@@ -45,6 +45,7 @@ export const FileCard: React.FC<FileCardProps> = ({
   const { toggleStarFile } = useStorage();
   const { thumbnailUrl, isVideo, setError } = useFileThumbnail(file);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -101,7 +102,17 @@ export const FileCard: React.FC<FileCardProps> = ({
   };
 
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('application/json', JSON.stringify({ id: file.id, type: 'file' }));
+    setIsDragging(true);
+    (window as any).__mycloud_internal_drag = true;
+    e.dataTransfer.setData('application/x-mycloud-item', 'true');
+    e.dataTransfer.setData('application/json', JSON.stringify({ id: file.id, type: 'file', name: file.name }));
+    e.dataTransfer.setData('text/plain', file.id);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    (window as any).__mycloud_internal_drag = false;
   };
 
   const isEditableText =
@@ -112,14 +123,19 @@ export const FileCard: React.FC<FileCardProps> = ({
     <div
       draggable
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDoubleClick={() => onPreview(file)}
       onContextMenu={(e) => {
         e.preventDefault();
         e.stopPropagation();
         setMenuOpen(true);
       }}
-      className={`group relative bg-[#101210] border border-[#1c2820] hover:border-[#2fd697]/50 hover:bg-[#121613] rounded-2xl p-3.5 sm:p-4 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between w-full min-w-0 max-w-full text-[#f5f5f5] ${
+      className={`group relative bg-[#101210] border rounded-2xl p-3.5 sm:p-4 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between w-full min-w-0 max-w-full text-[#f5f5f5] ${
         menuOpen ? 'z-50 shadow-2xl ring-1 ring-[#2fd697]/30' : 'z-10 hover:z-20'
+      } ${
+        isDragging
+          ? 'opacity-40 scale-95 border-dashed border-[#2fd697] bg-[#14231b]'
+          : 'border-[#1c2820] hover:border-[#2fd697]/50 hover:bg-[#121613]'
       }`}
     >
       <div className="flex items-start justify-between gap-2 mb-2.5">

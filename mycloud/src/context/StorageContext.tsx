@@ -635,41 +635,51 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const moveFile = async (fileId: string, targetFolderId: string | null) => {
-    if (!isSupabaseConfigured) {
-      setAllFiles((prev) =>
-        prev.map((f) => (f.id === fileId ? { ...f, folder_id: targetFolderId } : f))
+    setAllFiles((prev) => {
+      const next = prev.map((f) =>
+        f.id === fileId ? { ...f, folder_id: targetFolderId, updated_at: new Date().toISOString() } : f
       );
-      return;
+      try {
+        localStorage.setItem('mycloud_cached_files', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase
+          .from('files')
+          .update({ folder_id: targetFolderId, updated_at: new Date().toISOString() })
+          .eq('id', fileId);
+      } catch (err) {
+        console.warn('Supabase moveFile error:', err);
+      }
     }
-
-    await supabase
-      .from('files')
-      .update({ folder_id: targetFolderId, updated_at: new Date().toISOString() })
-      .eq('id', fileId);
-
-    setAllFiles((prev) =>
-      prev.map((f) => (f.id === fileId ? { ...f, folder_id: targetFolderId } : f))
-    );
   };
 
   const moveFolder = async (folderId: string, targetFolderId: string | null) => {
     if (folderId === targetFolderId) return;
 
-    if (!isSupabaseConfigured) {
-      setAllFolders((prev) =>
-        prev.map((f) => (f.id === folderId ? { ...f, parent_id: targetFolderId } : f))
+    setAllFolders((prev) => {
+      const next = prev.map((f) =>
+        f.id === folderId ? { ...f, parent_id: targetFolderId, updated_at: new Date().toISOString() } : f
       );
-      return;
+      try {
+        localStorage.setItem('mycloud_cached_folders', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase
+          .from('folders')
+          .update({ parent_id: targetFolderId, updated_at: new Date().toISOString() })
+          .eq('id', folderId);
+      } catch (err) {
+        console.warn('Supabase moveFolder error:', err);
+      }
     }
-
-    await supabase
-      .from('folders')
-      .update({ parent_id: targetFolderId, updated_at: new Date().toISOString() })
-      .eq('id', folderId);
-
-    setAllFolders((prev) =>
-      prev.map((f) => (f.id === folderId ? { ...f, parent_id: targetFolderId } : f))
-    );
   };
 
   const shareFile = async (fileId: string, email: string, permission: 'viewer' | 'editor') => {
